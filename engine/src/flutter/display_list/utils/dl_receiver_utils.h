@@ -117,7 +117,7 @@ class IgnoreDrawDispatchHelper : public virtual DlOpReceiver {
                      const DlRect& dst,
                      DlImageSampling sampling,
                      bool render_with_attributes,
-                     SrcRectConstraint constraint) override {}
+                     DlCanvas::SrcRectConstraint constraint) override {}
   void drawImageNine(const sk_sp<DlImage> image,
                      const DlIRect& center,
                      const DlRect& dst,
