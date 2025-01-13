@@ -19,7 +19,7 @@ constexpr char kFileURLPrefix[] = "file://";
 constexpr size_t kFileURLPrefixLength = sizeof(kFileURLPrefix) - 1;
 
 std::string GetCurrentDirectory() {
-  char buffer[PATH_MAX];
+  char buffer[1024];
   FML_CHECK(getcwd(buffer, sizeof(buffer)));
   return std::string(buffer);
 }

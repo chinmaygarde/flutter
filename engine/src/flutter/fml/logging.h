@@ -9,6 +9,7 @@
 
 #include "flutter/fml/log_level.h"
 #include "flutter/fml/macros.h"
+#include "flutter/fml/build_config.h"
 
 namespace fml {
 
@@ -26,7 +27,7 @@ struct LogCapture {
 
 class LogMessageVoidify {
  public:
-  void operator&(std::ostream&) {}
+  constexpr void operator&(std::ostream&) {}
 };
 
 class LogMessage {
@@ -58,7 +59,13 @@ int GetVlogVerbosity();
 
 // Returns true if |severity| is at or above the current minimum log level.
 // kLogFatal and above is always true.
+#if FML_OS_QNX
+constexpr bool ShouldCreateLogMessage(LogSeverity severity) {
+  return true;
+}
+#else
 bool ShouldCreateLogMessage(LogSeverity severity);
+#endif
 
 [[noreturn]] void KillProcess();
 
@@ -106,10 +113,18 @@ bool ShouldCreateLogMessage(LogSeverity severity);
 #define FML_DCHECK(condition) FML_EAT_STREAM_PARAMETERS(condition)
 #endif
 
+#if FML_OS_QNX
+
+#define FML_UNREACHABLE(x)
+
+#else
+
 #define FML_UNREACHABLE()                          \
   {                                                \
     FML_LOG(ERROR) << "Reached unreachable code."; \
     ::fml::KillProcess();                          \
   }
+
+#endif
 
 #endif  // FLUTTER_FML_LOGGING_H_
