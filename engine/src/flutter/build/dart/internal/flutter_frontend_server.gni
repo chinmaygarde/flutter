@@ -32,7 +32,7 @@ template("flutter_frontend_server") {
          "The Dart Kernel file location must be specified.")
 
   kernel_output = invoker.kernel_output
-
+  assert(false)
   common_deps = [ "//flutter/lib/snapshot:strong_platform" ]
   if (defined(invoker.deps)) {
     common_deps += invoker.deps
