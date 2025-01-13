@@ -69,6 +69,12 @@ config("compiler") {
   ldflags = []
   defines = []
 
+  if (is_qnx) {
+    defines += [
+      "_XOPEN_SOURCE=700"
+    ]
+  }
+
   # In general, Windows is totally different, but all the other builds share
   # some common GCC configuration. This section sets up Windows and the common
   # GCC flags, and then we handle the other non-Windows platforms specifically
@@ -642,6 +648,13 @@ if (is_win) {
     "-Wno-missing-field-initializers",  # "struct foo f = {0};"
     "-Wno-unused-parameter",  # Unused function parameters.
   ]
+
+  if (is_qnx) {
+    default_warning_flags += [
+      "-Wno-attributes",
+      "-Wno-maybe-uninitialized"
+    ]
+  }
 
   if (is_wasm) {
     default_warning_flags += [
