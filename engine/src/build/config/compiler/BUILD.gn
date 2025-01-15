@@ -71,7 +71,7 @@ config("compiler") {
 
   if (is_qnx) {
     defines += [
-      "_XOPEN_SOURCE=700"
+      "_XOPEN_SOURCE=700",
     ]
   }
 
@@ -652,7 +652,10 @@ if (is_win) {
   if (is_qnx) {
     default_warning_flags += [
       "-Wno-attributes",
-      "-Wno-maybe-uninitialized"
+      "-Wno-maybe-uninitialized",
+      "-Wno-return-type",
+      "-Wno-invalid-constexpr",
+      "-Wno-implicit-fallthrough",
     ]
   }
 
