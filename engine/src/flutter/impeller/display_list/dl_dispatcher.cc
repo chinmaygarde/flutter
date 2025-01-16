@@ -712,12 +712,12 @@ void DlDispatcherBase::drawImage(const sk_sp<flutter::DlImage> image,
   const auto src = DlRect::MakeWH(size.width, size.height);
   const auto dest = DlRect::MakeXYWH(point.x, point.y, size.width, size.height);
 
-  drawImageRect(image,                      // image
-                src,                        // source rect
-                dest,                       // destination rect
-                sampling,                   // sampling options
-                render_with_attributes,     // render with attributes
-                SrcRectConstraint::kStrict  // constraint
+  drawImageRect(image,                               // image
+                src,                                 // source rect
+                dest,                                // destination rect
+                sampling,                            // sampling options
+                render_with_attributes,              // render with attributes
+                flutter::SrcRectConstraint::kStrict  // constraint
   );
 }
 
@@ -728,7 +728,7 @@ void DlDispatcherBase::drawImageRect(
     const DlRect& dst,
     flutter::DlImageSampling sampling,
     bool render_with_attributes,
-    SrcRectConstraint constraint = SrcRectConstraint::kFast) {
+    flutter::SrcRectConstraint constraint = flutter::SrcRectConstraint::kFast) {
   AUTO_DEPTH_WATCHER(1u);
 
   GetCanvas().DrawImageRect(

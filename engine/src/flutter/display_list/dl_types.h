@@ -5,6 +5,24 @@
 #ifndef FLUTTER_DISPLAY_LIST_DL_TYPES_H_
 #define FLUTTER_DISPLAY_LIST_DL_TYPES_H_
 
-namespace flutter {}  // namespace flutter
+namespace flutter {
+
+enum class ClipOp {
+  kDifference,
+  kIntersect,
+};
+
+enum class PointMode {
+  kPoints,   //!< draw each point separately
+  kLines,    //!< draw each separate pair of points as a line segment
+  kPolygon,  //!< draw each pair of overlapping points as a line segment
+};
+
+enum class SrcRectConstraint {
+  kStrict,
+  kFast,
+};
+
+}  // namespace flutter
 
 #endif  // FLUTTER_DISPLAY_LIST_DL_TYPES_H_

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "flutter/display_list/dl_op_receiver.h"
+#include "flutter/display_list/dl_types.h"
 #include "flutter/display_list/geometry/dl_geometry_types.h"
 #include "flutter/display_list/geometry/dl_path.h"
 #include "flutter/display_list/utils/dl_receiver_utils.h"
@@ -178,7 +179,7 @@ class DlDispatcherBase : public flutter::DlOpReceiver {
                bool use_center) override;
 
   // |flutter::DlOpReceiver|
-  void drawPoints(PointMode mode,
+  void drawPoints(flutter::PointMode mode,
                   uint32_t count,
                   const DlPoint points[]) override;
 
@@ -198,7 +199,7 @@ class DlDispatcherBase : public flutter::DlOpReceiver {
                      const DlRect& dst,
                      flutter::DlImageSampling sampling,
                      bool render_with_attributes,
-                     SrcRectConstraint constraint) override;
+                     flutter::SrcRectConstraint constraint) override;
 
   // |flutter::DlOpReceiver|
   void drawImageNine(const sk_sp<flutter::DlImage> image,
