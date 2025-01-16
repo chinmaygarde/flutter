@@ -1268,7 +1268,7 @@ void DisplayListBuilder::DrawArc(const DlRect& bounds,
 DisplayListAttributeFlags DisplayListBuilder::FlagsForPointMode(
     PointMode mode) {
   switch (mode) {
-    case DlCanvas::PointMode::kPoints:
+    case PointMode::kPoints:
       return kDrawPointsAsPointsFlags;
     case PointMode::kLines:
       return kDrawPointsAsLinesFlags;

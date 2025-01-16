@@ -349,9 +349,7 @@ class DisplayListGeneralReceiver : public DlOpReceiver {
     RecordByType(DisplayListOpType::kTransformReset);
   }
 
-  void clipRect(const DlRect& rect,
-                DlCanvas::ClipOp clip_op,
-                bool is_aa) override {
+  void clipRect(const DlRect& rect, ClipOp clip_op, bool is_aa) override {
     switch (clip_op) {
       case ClipOp::kIntersect:
         RecordByType(DisplayListOpType::kClipIntersectRect);
@@ -361,9 +359,7 @@ class DisplayListGeneralReceiver : public DlOpReceiver {
         break;
     }
   }
-  void clipOval(const DlRect& bounds,
-                DlCanvas::ClipOp clip_op,
-                bool is_aa) override {
+  void clipOval(const DlRect& bounds, ClipOp clip_op, bool is_aa) override {
     switch (clip_op) {
       case ClipOp::kIntersect:
         RecordByType(DisplayListOpType::kClipIntersectOval);
@@ -374,7 +370,7 @@ class DisplayListGeneralReceiver : public DlOpReceiver {
     }
   }
   void clipRoundRect(const DlRoundRect& rrect,
-                     DlCanvas::ClipOp clip_op,
+                     ClipOp clip_op,
                      bool is_aa) override {
     switch (clip_op) {
       case ClipOp::kIntersect:
@@ -385,9 +381,7 @@ class DisplayListGeneralReceiver : public DlOpReceiver {
         break;
     }
   }
-  void clipPath(const DlPath& path,
-                DlCanvas::ClipOp clip_op,
-                bool is_aa) override {
+  void clipPath(const DlPath& path, ClipOp clip_op, bool is_aa) override {
     switch (clip_op) {
       case ClipOp::kIntersect:
         RecordByType(DisplayListOpType::kClipIntersectPath);
@@ -449,17 +443,17 @@ class DisplayListGeneralReceiver : public DlOpReceiver {
                bool use_center) override {
     RecordByType(DisplayListOpType::kDrawArc);
   }
-  void drawPoints(DlCanvas::PointMode mode,
+  void drawPoints(PointMode mode,
                   uint32_t count,
                   const DlPoint points[]) override {
     switch (mode) {
-      case DlCanvas::PointMode::kPoints:
+      case PointMode::kPoints:
         RecordByType(DisplayListOpType::kDrawPoints);
         break;
-      case DlCanvas::PointMode::kLines:
+      case PointMode::kLines:
         RecordByType(DisplayListOpType::kDrawLines);
         break;
-      case DlCanvas::PointMode::kPolygon:
+      case PointMode::kPolygon:
         RecordByType(DisplayListOpType::kDrawPolygon);
         break;
     }

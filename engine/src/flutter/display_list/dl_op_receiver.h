@@ -15,7 +15,10 @@
 #include "flutter/display_list/effects/dl_color_source.h"
 #include "flutter/display_list/effects/dl_image_filter.h"
 #include "flutter/display_list/effects/dl_mask_filter.h"
+#include "flutter/display_list/geometry/dl_path.h"
 #include "flutter/display_list/image/dl_image.h"
+#include "flutter/impeller/typographer/text_frame.h"
+#include "flutter/third_party/skia/include/core/SkTextBlob.h"
 
 namespace flutter {
 

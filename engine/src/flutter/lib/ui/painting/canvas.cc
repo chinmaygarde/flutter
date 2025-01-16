@@ -162,7 +162,7 @@ void Canvas::clipRect(double left,
                       double top,
                       double right,
                       double bottom,
-                      DlCanvas::ClipOp clipOp,
+                      ClipOp clipOp,
                       bool doAntiAlias) {
   if (display_list_builder_) {
     builder()->ClipRect(DlRect::MakeLTRB(SafeNarrow(left), SafeNarrow(top),
@@ -444,7 +444,7 @@ Dart_Handle Canvas::drawImageRect(const CanvasImage* image,
     const DlPaint* opt_paint =
         paint.paint(dl_paint, kDrawImageRectWithPaintFlags, DlTileMode::kClamp);
     builder()->DrawImageRect(dl_image, src, dst, sampling, opt_paint,
-                             DlCanvas::SrcRectConstraint::kFast);
+                             SrcRectConstraint::kFast);
   }
   return Dart_Null();
 }
@@ -509,7 +509,7 @@ void Canvas::drawPicture(Picture* picture) {
 
 void Canvas::drawPoints(Dart_Handle paint_objects,
                         Dart_Handle paint_data,
-                        DlCanvas::PointMode point_mode,
+                        PointMode point_mode,
                         const tonic::Float32List& points) {
   Paint paint(paint_objects, paint_data);
 
@@ -520,13 +520,13 @@ void Canvas::drawPoints(Dart_Handle paint_objects,
   if (display_list_builder_) {
     DlPaint dl_paint;
     switch (point_mode) {
-      case DlCanvas::PointMode::kPoints:
+      case PointMode::kPoints:
         paint.paint(dl_paint, kDrawPointsAsPointsFlags, DlTileMode::kDecal);
         break;
-      case DlCanvas::PointMode::kLines:
+      case PointMode::kLines:
         paint.paint(dl_paint, kDrawPointsAsLinesFlags, DlTileMode::kDecal);
         break;
-      case DlCanvas::PointMode::kPolygon:
+      case PointMode::kPolygon:
         paint.paint(dl_paint, kDrawPointsAsPolygonFlags, DlTileMode::kDecal);
         break;
     }

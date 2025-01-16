@@ -730,22 +730,22 @@ std::vector<DisplayListInvocationGroup> CreateAllRenderingOps() {
        {
            {1, 8 + TestPointCount * 8, 1,
             [](DlOpReceiver& r) {
-              r.drawPoints(DlCanvas::PointMode::kPoints, TestPointCount,
+              r.drawPoints(PointMode::kPoints, TestPointCount,
                            ToDlPoints(kTestPoints));
             }},
            {1, 8 + (TestPointCount - 1) * 8, 1,
             [](DlOpReceiver& r) {
-              r.drawPoints(DlCanvas::PointMode::kPoints, TestPointCount - 1,
+              r.drawPoints(PointMode::kPoints, TestPointCount - 1,
                            ToDlPoints(kTestPoints));
             }},
            {1, 8 + TestPointCount * 8, 1,
             [](DlOpReceiver& r) {
-              r.drawPoints(DlCanvas::PointMode::kLines, TestPointCount,
+              r.drawPoints(PointMode::kLines, TestPointCount,
                            ToDlPoints(kTestPoints));
             }},
            {1, 8 + TestPointCount * 8, 1,
             [](DlOpReceiver& r) {
-              r.drawPoints(DlCanvas::PointMode::kPolygon, TestPointCount,
+              r.drawPoints(PointMode::kPolygon, TestPointCount,
                            ToDlPoints(kTestPoints));
             }},
        }},
@@ -803,48 +803,47 @@ std::vector<DisplayListInvocationGroup> CreateAllRenderingOps() {
               r.drawImageRect(TestImage1, DlRect::MakeLTRB(10, 10, 20, 20),
                               DlRect::MakeLTRB(10, 10, 80, 80),
                               kNearestSampling, false,
-                              DlCanvas::SrcRectConstraint::kFast);
+                              SrcRectConstraint::kFast);
             }},
            {1, 56, 1,
             [](DlOpReceiver& r) {
               r.drawImageRect(TestImage1, DlRect::MakeLTRB(10, 10, 20, 20),
                               DlRect::MakeLTRB(10, 10, 80, 80),
-                              kNearestSampling, true,
-                              DlCanvas::SrcRectConstraint::kFast);
+                              kNearestSampling, true, SrcRectConstraint::kFast);
             }},
            {1, 56, 1,
             [](DlOpReceiver& r) {
               r.drawImageRect(TestImage1, DlRect::MakeLTRB(10, 10, 20, 20),
                               DlRect::MakeLTRB(10, 10, 80, 80),
                               kNearestSampling, false,
-                              DlCanvas::SrcRectConstraint::kStrict);
+                              SrcRectConstraint::kStrict);
             }},
            {1, 56, 1,
             [](DlOpReceiver& r) {
               r.drawImageRect(TestImage1, DlRect::MakeLTRB(10, 10, 25, 20),
                               DlRect::MakeLTRB(10, 10, 80, 80),
                               kNearestSampling, false,
-                              DlCanvas::SrcRectConstraint::kFast);
+                              SrcRectConstraint::kFast);
             }},
            {1, 56, 1,
             [](DlOpReceiver& r) {
               r.drawImageRect(TestImage1, DlRect::MakeLTRB(10, 10, 20, 20),
                               DlRect::MakeLTRB(10, 10, 85, 80),
                               kNearestSampling, false,
-                              DlCanvas::SrcRectConstraint::kFast);
+                              SrcRectConstraint::kFast);
             }},
            {1, 56, 1,
             [](DlOpReceiver& r) {
               r.drawImageRect(TestImage1, DlRect::MakeLTRB(10, 10, 20, 20),
                               DlRect::MakeLTRB(10, 10, 80, 80), kLinearSampling,
-                              false, DlCanvas::SrcRectConstraint::kFast);
+                              false, SrcRectConstraint::kFast);
             }},
            {1, 56, 1,
             [](DlOpReceiver& r) {
               r.drawImageRect(TestImage2, DlRect::MakeLTRB(10, 10, 15, 15),
                               DlRect::MakeLTRB(10, 10, 80, 80),
                               kNearestSampling, false,
-                              DlCanvas::SrcRectConstraint::kFast);
+                              SrcRectConstraint::kFast);
             }},
            {1, 56, 1,
             [](DlOpReceiver& r) {
@@ -852,7 +851,7 @@ std::vector<DisplayListInvocationGroup> CreateAllRenderingOps() {
               r.drawImageRect(dl_image, DlRect::MakeLTRB(10, 10, 15, 15),
                               DlRect::MakeLTRB(10, 10, 80, 80),
                               kNearestSampling, false,
-                              DlCanvas::SrcRectConstraint::kFast);
+                              SrcRectConstraint::kFast);
             }},
        }},
       {"DrawImageNine",
