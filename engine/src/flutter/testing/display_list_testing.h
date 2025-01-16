@@ -46,12 +46,10 @@ extern std::ostream& operator<<(std::ostream& os,
                                 const flutter::DlPaint& paint);
 extern std::ostream& operator<<(std::ostream& os,
                                 const flutter::DlBlendMode& mode);
+extern std::ostream& operator<<(std::ostream& os, const flutter::ClipOp& op);
+extern std::ostream& operator<<(std::ostream& os, const flutter::PointMode& op);
 extern std::ostream& operator<<(std::ostream& os,
-                                const flutter::DlCanvas::ClipOp& op);
-extern std::ostream& operator<<(std::ostream& os,
-                                const flutter::DlCanvas::PointMode& op);
-extern std::ostream& operator<<(std::ostream& os,
-                                const flutter::DlCanvas::SrcRectConstraint& op);
+                                const flutter::SrcRectConstraint& op);
 extern std::ostream& operator<<(std::ostream& os,
                                 const flutter::DlStrokeCap& cap);
 extern std::ostream& operator<<(std::ostream& os,
@@ -355,10 +353,10 @@ class DisplayListGeneralReceiver : public DlOpReceiver {
                 DlCanvas::ClipOp clip_op,
                 bool is_aa) override {
     switch (clip_op) {
-      case DlCanvas::ClipOp::kIntersect:
+      case ClipOp::kIntersect:
         RecordByType(DisplayListOpType::kClipIntersectRect);
         break;
-      case DlCanvas::ClipOp::kDifference:
+      case ClipOp::kDifference:
         RecordByType(DisplayListOpType::kClipDifferenceRect);
         break;
     }
@@ -367,10 +365,10 @@ class DisplayListGeneralReceiver : public DlOpReceiver {
                 DlCanvas::ClipOp clip_op,
                 bool is_aa) override {
     switch (clip_op) {
-      case DlCanvas::ClipOp::kIntersect:
+      case ClipOp::kIntersect:
         RecordByType(DisplayListOpType::kClipIntersectOval);
         break;
-      case DlCanvas::ClipOp::kDifference:
+      case ClipOp::kDifference:
         RecordByType(DisplayListOpType::kClipDifferenceOval);
         break;
     }
@@ -379,10 +377,10 @@ class DisplayListGeneralReceiver : public DlOpReceiver {
                      DlCanvas::ClipOp clip_op,
                      bool is_aa) override {
     switch (clip_op) {
-      case DlCanvas::ClipOp::kIntersect:
+      case ClipOp::kIntersect:
         RecordByType(DisplayListOpType::kClipIntersectRoundRect);
         break;
-      case DlCanvas::ClipOp::kDifference:
+      case ClipOp::kDifference:
         RecordByType(DisplayListOpType::kClipDifferenceRoundRect);
         break;
     }
@@ -391,10 +389,10 @@ class DisplayListGeneralReceiver : public DlOpReceiver {
                 DlCanvas::ClipOp clip_op,
                 bool is_aa) override {
     switch (clip_op) {
-      case DlCanvas::ClipOp::kIntersect:
+      case ClipOp::kIntersect:
         RecordByType(DisplayListOpType::kClipIntersectPath);
         break;
-      case DlCanvas::ClipOp::kDifference:
+      case ClipOp::kDifference:
         RecordByType(DisplayListOpType::kClipDifferencePath);
         break;
     }

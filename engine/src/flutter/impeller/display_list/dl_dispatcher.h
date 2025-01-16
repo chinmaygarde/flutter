@@ -125,18 +125,24 @@ class DlDispatcherBase : public flutter::DlOpReceiver {
   void transformReset() override;
 
   // |flutter::DlOpReceiver|
-  void clipRect(const DlRect& rect, ClipOp clip_op, bool is_aa) override;
+  void clipRect(const DlRect& rect,
+                flutter::ClipOp clip_op,
+                bool is_aa) override;
 
   // |flutter::DlOpReceiver|
-  void clipOval(const DlRect& bounds, ClipOp clip_op, bool is_aa) override;
+  void clipOval(const DlRect& bounds,
+                flutter::ClipOp clip_op,
+                bool is_aa) override;
 
   // |flutter::DlOpReceiver|
   void clipRoundRect(const DlRoundRect& rrect,
-                     ClipOp clip_op,
+                     flutter::ClipOp clip_op,
                      bool is_aa) override;
 
   // |flutter::DlOpReceiver|
-  void clipPath(const DlPath& path, ClipOp clip_op, bool is_aa) override;
+  void clipPath(const DlPath& path,
+                flutter::ClipOp clip_op,
+                bool is_aa) override;
 
   // |flutter::DlOpReceiver|
   void drawColor(flutter::DlColor color, flutter::DlBlendMode mode) override;

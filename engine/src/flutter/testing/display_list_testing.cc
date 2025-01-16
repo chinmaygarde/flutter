@@ -215,8 +215,8 @@ static std::ostream& operator<<(std::ostream& os, const SkRSXform& xform) {
 
 std::ostream& operator<<(std::ostream& os, const DlCanvas::ClipOp& op) {
   switch (op) {
-    case DlCanvas::ClipOp::kDifference: return os << "ClipOp::kDifference";
-    case DlCanvas::ClipOp::kIntersect:  return os << "ClipOp::kIntersect";
+    case ClipOp::kDifference: return os << "ClipOp::kDifference";
+    case ClipOp::kIntersect:  return os << "ClipOp::kIntersect";
   }
 }
 

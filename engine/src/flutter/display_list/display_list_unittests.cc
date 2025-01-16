@@ -3425,7 +3425,7 @@ TEST_F(DisplayListTest, DrawSaveDrawCannotInheritOpacity) {
   DisplayListBuilder builder;
   builder.DrawCircle(SkPoint{10, 10}, 5, DlPaint());
   builder.Save();
-  builder.ClipRect(SkRect{0, 0, 20, 20}, DlCanvas::ClipOp::kIntersect, false);
+  builder.ClipRect(SkRect{0, 0, 20, 20}, ClipOp::kIntersect, false);
   builder.DrawRect(SkRect{5, 5, 15, 15}, DlPaint());
   builder.Restore();
   auto display_list = builder.Build();

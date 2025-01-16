@@ -504,7 +504,7 @@ struct TransformResetOp final : TransformClipOpBase {
     const shapetype shape;                                                     \
                                                                                \
     void dispatch(DlOpReceiver& receiver) const {                              \
-      receiver.clip##shapename(shape, DlCanvas::ClipOp::k##clipop, is_aa);     \
+      receiver.clip##shapename(shape, ClipOp::k##clipop, is_aa);               \
     }                                                                          \
   };
 DEFINE_CLIP_SHAPE_OP(Rect, DlRect, Intersect)
@@ -527,7 +527,7 @@ DEFINE_CLIP_SHAPE_OP(RoundRect, DlRoundRect, Difference)
     const DlPath path;                                                    \
                                                                           \
     void dispatch(DlOpReceiver& receiver) const {                         \
-      receiver.clipPath(path, DlCanvas::ClipOp::k##clipop, is_aa);        \
+      receiver.clipPath(path, ClipOp::k##clipop, is_aa);                  \
     }                                                                     \
                                                                           \
     DisplayListCompare equals(const Clip##clipop##PathOp* other) const {  \

@@ -907,8 +907,7 @@ TEST_P(AiksTest, BackdropRestoreUsesCorrectCoverageForFirstRestoredClip) {
 
   DlPaint paint;
   // Add a difference clip that cuts out the bottom right corner
-  builder.ClipRect(SkRect::MakeLTRB(50, 50, 100, 100),
-                   DlCanvas::ClipOp::kDifference);
+  builder.ClipRect(SkRect::MakeLTRB(50, 50, 100, 100), ClipOp::kDifference);
 
   // Draw a red rectangle that's going to be completely covered by green later.
   paint.setColor(DlColor::kRed());

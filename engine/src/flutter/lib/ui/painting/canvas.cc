@@ -173,8 +173,7 @@ void Canvas::clipRect(double left,
 
 void Canvas::clipRRect(const RRect& rrect, bool doAntiAlias) {
   if (display_list_builder_) {
-    builder()->ClipRoundRect(rrect.rrect, DlCanvas::ClipOp::kIntersect,
-                             doAntiAlias);
+    builder()->ClipRoundRect(rrect.rrect, ClipOp::kIntersect, doAntiAlias);
   }
 }
 
@@ -185,8 +184,7 @@ void Canvas::clipPath(const CanvasPath* path, bool doAntiAlias) {
     return;
   }
   if (display_list_builder_) {
-    builder()->ClipPath(path->path(), DlCanvas::ClipOp::kIntersect,
-                        doAntiAlias);
+    builder()->ClipPath(path->path(), ClipOp::kIntersect, doAntiAlias);
   }
 }
 
