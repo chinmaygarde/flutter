@@ -72,6 +72,7 @@ config("compiler") {
   if (is_qnx) {
     defines += [
       "_XOPEN_SOURCE=700",
+      "_QNX_SOURCE",
     ]
   }
 
@@ -642,20 +643,15 @@ if (is_win) {
   default_warning_flags += [
     # Enables.
     "-Wendif-labels",  # Weird old-style text after an #endif.
-    "-Werror",  # Warnings as errors.
 
     # Disables.
     "-Wno-missing-field-initializers",  # "struct foo f = {0};"
     "-Wno-unused-parameter",  # Unused function parameters.
   ]
 
-  if (is_qnx) {
+  if (!is_qnx) {
     default_warning_flags += [
-      "-Wno-attributes",
-      "-Wno-maybe-uninitialized",
-      "-Wno-return-type",
-      "-Wno-invalid-constexpr",
-      "-Wno-implicit-fallthrough",
+      "-Werror",  # Warnings as errors.
     ]
   }
 
@@ -726,10 +722,14 @@ config("chromium_code") {
   if (is_win || is_wasm) {
     cflags = []
   } else {
-    cflags = [
-      "-Wall",
-      "-Wextra",
-    ]
+    cflags = []
+
+    if (!is_qnx) {
+      cflags = [
+        "-Wall",
+        "-Wextra",
+      ]
+    }
 
     # In Chromium code, we define __STDC_foo_MACROS in order to get the
     # C99 macros on Mac and Linux.
