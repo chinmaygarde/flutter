@@ -24,7 +24,6 @@ if (is_fuchsia) {
 #   * target_cpu-specific gen_snapshot
 #   * target_cpu-specific analyze_snapshot
 group("generate_snapshot_bins") {
-  assert(false)
   deps = [
     ":generate_snapshot_bin",
     ":kernel_platform_files",
