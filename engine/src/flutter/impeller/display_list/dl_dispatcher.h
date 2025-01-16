@@ -124,18 +124,18 @@ class DlDispatcherBase : public flutter::DlOpReceiver {
   void transformReset() override;
 
   // |flutter::DlOpReceiver|
-  void clipRect(const DlRect& rect, DlCanvas::ClipOp clip_op, bool is_aa) override;
+  void clipRect(const DlRect& rect, ClipOp clip_op, bool is_aa) override;
 
   // |flutter::DlOpReceiver|
-  void clipOval(const DlRect& bounds, DlCanvas::ClipOp clip_op, bool is_aa) override;
+  void clipOval(const DlRect& bounds, ClipOp clip_op, bool is_aa) override;
 
   // |flutter::DlOpReceiver|
   void clipRoundRect(const DlRoundRect& rrect,
-                     DlCanvas::ClipOp clip_op,
+                     ClipOp clip_op,
                      bool is_aa) override;
 
   // |flutter::DlOpReceiver|
-  void clipPath(const DlPath& path, DlCanvas::ClipOp clip_op, bool is_aa) override;
+  void clipPath(const DlPath& path, ClipOp clip_op, bool is_aa) override;
 
   // |flutter::DlOpReceiver|
   void drawColor(flutter::DlColor color, flutter::DlBlendMode mode) override;
@@ -198,7 +198,7 @@ class DlDispatcherBase : public flutter::DlOpReceiver {
                      const DlRect& dst,
                      flutter::DlImageSampling sampling,
                      bool render_with_attributes,
-                     DlCanvas::SrcRectConstraint constraint) override;
+                     SrcRectConstraint constraint) override;
 
   // |flutter::DlOpReceiver|
   void drawImageNine(const sk_sp<flutter::DlImage> image,

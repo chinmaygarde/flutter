@@ -1280,7 +1280,7 @@ DisplayListAttributeFlags DisplayListBuilder::FlagsForPointMode(
   }
   FML_UNREACHABLE();
 }
-void DisplayListBuilder::drawPoints(DlCanvas::PointMode mode,
+void DisplayListBuilder::drawPoints(PointMode mode,
                                     uint32_t count,
                                     const DlPoint pts[]) {
   if (count == 0) {

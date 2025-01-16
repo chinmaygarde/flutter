@@ -429,7 +429,7 @@ static Entity::ClipOperation ToClipOperation(
 
 // |flutter::DlOpReceiver|
 void DlDispatcherBase::clipRect(const DlRect& rect,
-                                DlCanvas::ClipOp clip_op,
+                                ClipOp clip_op,
                                 bool is_aa) {
   AUTO_DEPTH_WATCHER(0u);
 
@@ -439,7 +439,7 @@ void DlDispatcherBase::clipRect(const DlRect& rect,
 
 // |flutter::DlOpReceiver|
 void DlDispatcherBase::clipOval(const DlRect& bounds,
-                                DlCanvas::ClipOp clip_op,
+                                ClipOp clip_op,
                                 bool is_aa) {
   AUTO_DEPTH_WATCHER(0u);
 
@@ -449,7 +449,7 @@ void DlDispatcherBase::clipOval(const DlRect& bounds,
 
 // |flutter::DlOpReceiver|
 void DlDispatcherBase::clipRoundRect(const DlRoundRect& rrect,
-                                     DlCanvas::ClipOp sk_op,
+                                     ClipOp sk_op,
                                      bool is_aa) {
   AUTO_DEPTH_WATCHER(0u);
 
@@ -470,7 +470,7 @@ void DlDispatcherBase::clipRoundRect(const DlRoundRect& rrect,
 }
 
 // |flutter::DlOpReceiver|
-void DlDispatcherBase::clipPath(const DlPath& path, DlCanvas::ClipOp sk_op, bool is_aa) {
+void DlDispatcherBase::clipPath(const DlPath& path, ClipOp sk_op, bool is_aa) {
   AUTO_DEPTH_WATCHER(0u);
 
   auto clip_op = ToClipOperation(sk_op);
@@ -649,7 +649,7 @@ void DlDispatcherBase::drawArc(const DlRect& oval_bounds,
 }
 
 // |flutter::DlOpReceiver|
-void DlDispatcherBase::drawPoints(DlCanvas::PointMode mode,
+void DlDispatcherBase::drawPoints(PointMode mode,
                                   uint32_t count,
                                   const DlPoint points[]) {
   AUTO_DEPTH_WATCHER(1u);

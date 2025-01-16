@@ -7,9 +7,9 @@
 
 #include "flutter/display_list/display_list.h"
 #include "flutter/display_list/dl_blend_mode.h"
-#include "flutter/display_list/dl_canvas.h"
 #include "flutter/display_list/dl_paint.h"
 #include "flutter/display_list/dl_sampling_options.h"
+#include "flutter/display_list/dl_types.h"
 #include "flutter/display_list/dl_vertices.h"
 #include "flutter/display_list/effects/dl_color_filter.h"
 #include "flutter/display_list/effects/dl_color_source.h"
@@ -286,12 +286,12 @@ class DlOpReceiver {
   // Clears the transformation stack.
   virtual void transformReset() = 0;
 
-  virtual void clipRect(const DlRect& rect, DlCanvas::ClipOp clip_op, bool is_aa) = 0;
-  virtual void clipOval(const DlRect& bounds, DlCanvas::ClipOp clip_op, bool is_aa) = 0;
+  virtual void clipRect(const DlRect& rect, ClipOp clip_op, bool is_aa) = 0;
+  virtual void clipOval(const DlRect& bounds, ClipOp clip_op, bool is_aa) = 0;
   virtual void clipRoundRect(const DlRoundRect& rrect,
-                             DlCanvas::ClipOp clip_op,
+                             ClipOp clip_op,
                              bool is_aa) = 0;
-  virtual void clipPath(const DlPath& path, DlCanvas::ClipOp clip_op, bool is_aa) = 0;
+  virtual void clipPath(const DlPath& path, ClipOp clip_op, bool is_aa) = 0;
 
   // The following rendering methods all take their rendering attributes
   // from the last value set by the attribute methods above (regardless
@@ -318,7 +318,7 @@ class DlOpReceiver {
                        DlScalar start_degrees,
                        DlScalar sweep_degrees,
                        bool use_center) = 0;
-  virtual void drawPoints(DlCanvas::PointMode mode,
+  virtual void drawPoints(PointMode mode,
                           uint32_t count,
                           const DlPoint points[]) = 0;
   virtual void drawVertices(const std::shared_ptr<DlVertices>& vertices,
@@ -333,7 +333,7 @@ class DlOpReceiver {
       const DlRect& dst,
       DlImageSampling sampling,
       bool render_with_attributes,
-      DlCanvas::SrcRectConstraint constraint = DlCanvas::SrcRectConstraint::kFast) = 0;
+      SrcRectConstraint constraint = SrcRectConstraint::kFast) = 0;
   virtual void drawImageNine(const sk_sp<DlImage> image,
                              const DlIRect& center,
                              const DlRect& dst,
