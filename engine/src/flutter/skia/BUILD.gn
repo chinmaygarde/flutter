@@ -716,7 +716,7 @@ skia_component("skia") {
     }
   } else {
     sources += [ "$_skia_root/src/ports/SkOSFile_posix.cpp" ]
-    libs += [ "dl" ]
+    # libs += [ "dl" ]
   }
 
   if (is_android) {
@@ -729,7 +729,7 @@ skia_component("skia") {
     ]
   }
 
-  if (is_linux || is_wasm) {
+  if (is_linux || is_wasm || is_qnx) {
     sources += [ "$_skia_root/src/ports/SkDebug_stdio.cpp" ]
     if (skia_use_egl) {
       libs += [ "GLESv2" ]

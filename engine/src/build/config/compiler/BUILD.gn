@@ -73,6 +73,7 @@ config("compiler") {
     defines += [
       "_XOPEN_SOURCE=700",
       "_QNX_SOURCE",
+      "SKNX_NO_SIMD",
     ]
   }
 
@@ -339,11 +340,27 @@ config("compiler") {
 
   # Linux/Android common flags setup.
   # ---------------------------------
-  if (is_linux || is_android) {
+  if (is_linux || is_android || is_qnx) {
     cflags += [
       "-fPIC",
-      "-pipe",  # Use pipes for communicating between sub-processes. Faster.
     ]
+
+    if (is_qnx) {
+      cflags += [
+        "-V",
+        "gcc_ntoaarch64le"
+      ]
+      ldflags += [
+        "-V",
+        "gcc_ntoaarch64le"
+      ]
+    }
+
+    if (!is_qnx) {
+      cflags += [
+        "-pipe",  # Use pipes for communicating between sub-processes. Faster.
+      ]
+    }
 
     ldflags += [
       "-fPIC",
@@ -652,6 +669,12 @@ if (is_win) {
   if (!is_qnx) {
     default_warning_flags += [
       "-Werror",  # Warnings as errors.
+    ]
+  }
+
+  if (is_qnx) {
+    default_warning_flags += [
+      "-fpermissive"
     ]
   }
 

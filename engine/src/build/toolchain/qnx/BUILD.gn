@@ -13,7 +13,7 @@ gcc_toolchain("qnx") {
   nm = "ntoaarch64-nm"
   ar = "ntoaarch64-ar"
   ld = "q++"
-  llvm_objcopy = "ntoaarch64-objcopy"
+  strip = "ntoaarch64-strip"
 
   toolchain_cpu = "arm64"
   toolchain_os = "linux"
