@@ -27,7 +27,7 @@ struct LogCapture {
 
 class LogMessageVoidify {
  public:
-  constexpr void operator&(std::ostream&) {}
+  void operator&(std::ostream&) {}
 };
 
 class LogMessage {
@@ -68,6 +68,12 @@ bool ShouldCreateLogMessage(LogSeverity severity);
 #endif
 
 [[noreturn]] void KillProcess();
+
+constexpr void KillProcess2(bool should_kill) {
+  if (should_kill) {
+    KillProcess();
+  }
+}
 
 }  // namespace fml
 
@@ -115,7 +121,7 @@ bool ShouldCreateLogMessage(LogSeverity severity);
 
 #if FML_OS_QNX
 
-#define FML_UNREACHABLE(x)
+#define FML_UNREACHABLE() { ::fml::KillProcess2(true); }
 
 #else
 
