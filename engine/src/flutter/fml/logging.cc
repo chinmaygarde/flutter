@@ -213,11 +213,9 @@ int GetVlogVerbosity() {
   return std::max(-1, kLogInfo - GetMinLogLevel());
 }
 
-#if !FML_OS_QNX
 bool ShouldCreateLogMessage(LogSeverity severity) {
   return severity >= GetMinLogLevel();
 }
-#endif // !FML_OS_QNX
 
 void KillProcess() {
   abort();

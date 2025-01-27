@@ -59,20 +59,26 @@ int GetVlogVerbosity();
 
 // Returns true if |severity| is at or above the current minimum log level.
 // kLogFatal and above is always true.
-#if FML_OS_QNX
-constexpr bool ShouldCreateLogMessage(LogSeverity severity) {
-  return true;
-}
-#else
 bool ShouldCreateLogMessage(LogSeverity severity);
-#endif
+
+constexpr bool ShouldCreateLogMessage2(LogSeverity severity, bool true_arg) {
+  if (true_arg) {
+    return ShouldCreateLogMessage(severity);
+  }
+  return false;
+}
 
 [[noreturn]] void KillProcess();
 
-constexpr void KillProcess2(bool should_kill) {
-  if (should_kill) {
+[[noreturn]] constexpr void KillProcess2(bool true_arg) {
+  if (true_arg) {
     KillProcess();
   }
+#if defined(_MSC_VER) && !defined(__clang__)
+    __assume(false);
+#else
+    __builtin_unreachable();
+#endif
 }
 
 }  // namespace fml
@@ -90,7 +96,7 @@ constexpr void KillProcess2(bool should_kill) {
             ::fml::LogMessage(::fml::kLogFatal, 0, 0, nullptr).stream()
 
 #define FML_LOG_IS_ON(severity) \
-  (::fml::ShouldCreateLogMessage(::fml::LOG_##severity))
+  (::fml::ShouldCreateLogMessage2(::fml::LOG_##severity, true))
 
 #define FML_LOG(severity) \
   FML_LAZY_STREAM(FML_LOG_STREAM(severity), FML_LOG_IS_ON(severity))
@@ -119,18 +125,10 @@ constexpr void KillProcess2(bool should_kill) {
 #define FML_DCHECK(condition) FML_EAT_STREAM_PARAMETERS(condition)
 #endif
 
-#if FML_OS_QNX
-
-#define FML_UNREACHABLE() { ::fml::KillProcess2(true); }
-
-#else
-
 #define FML_UNREACHABLE()                          \
   {                                                \
     FML_LOG(ERROR) << "Reached unreachable code."; \
-    ::fml::KillProcess();                          \
+    ::fml::KillProcess2(true);             \
   }
-
-#endif
 
 #endif  // FLUTTER_FML_LOGGING_H_
