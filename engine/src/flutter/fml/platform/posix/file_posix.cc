@@ -116,12 +116,8 @@ fml::UniqueFD OpenDirectory(const fml::UniqueFD& base_directory,
     }
   }
 
-  int open_flags = O_RDONLY;
-#ifdef O_DIRECTORY
-  open_flags |= O_DIRECTORY;
-#endif
   return fml::UniqueFD{FML_HANDLE_EINTR(
-      ::openat(base_directory.get(), path, open_flags))};
+      ::openat(base_directory.get(), path, O_RDONLY | O_DIRECTORY))};
 }
 
 fml::UniqueFD Duplicate(fml::UniqueFD::element_type descriptor) {

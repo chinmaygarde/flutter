@@ -345,17 +345,6 @@ config("compiler") {
       "-fPIC",
     ]
 
-    if (is_qnx) {
-      cflags += [
-        "-V",
-        "gcc_ntoaarch64le"
-      ]
-      ldflags += [
-        "-V",
-        "gcc_ntoaarch64le"
-      ]
-    }
-
     if (!is_qnx) {
       cflags += [
         "-pipe",  # Use pipes for communicating between sub-processes. Faster.
@@ -371,6 +360,20 @@ config("compiler") {
     if (!using_sanitizer) {
       ldflags += [ "-Wl,-z,defs" ]
     }
+  }
+
+  if (is_qnx) {
+    qnx_arch_flags = []
+    if (target_cpu == "arm64") {
+      qnx_arch_flags += [
+        "-V",
+        "gcc_ntoaarch64le"
+      ]
+    } else {
+      assert(false, "Unknown QNX architecture")
+    }
+    cflags += qnx_arch_flags
+    ldflags += qnx_arch_flags
   }
 
   # Linux-specific compiler flags setup.
@@ -620,6 +623,9 @@ config("runtime_library") {
 
 default_warning_flags = []
 default_warning_flags_cc = []
+if (is_qnx) {
+  default_warning_flags_cc += [ "-fpermissive" ]
+}
 if (is_win) {
   default_warning_flags += [
     # Permanent.
@@ -669,12 +675,6 @@ if (is_win) {
   if (!is_qnx) {
     default_warning_flags += [
       "-Werror",  # Warnings as errors.
-    ]
-  }
-
-  if (is_qnx) {
-    default_warning_flags += [
-      "-fpermissive"
     ]
   }
 
