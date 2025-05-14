@@ -82,7 +82,7 @@ IMPELLER_EXTERN_C_BEGIN
 
 #define IMPELLER_VERSION_VARIANT 1
 #define IMPELLER_VERSION_MAJOR 1
-#define IMPELLER_VERSION_MINOR 4
+#define IMPELLER_VERSION_MINOR 5
 #define IMPELLER_VERSION_PATCH 0
 
 //------------------------------------------------------------------------------
@@ -647,6 +647,14 @@ typedef struct ImpellerTextDecoration {
 } ImpellerTextDecoration;
 
 //------------------------------------------------------------------------------
+// Signatures
+//------------------------------------------------------------------------------
+
+typedef void (*ImpellerMappingCallback)(
+    const ImpellerMapping* IMPELLER_NULLABLE mapping,
+    void* IMPELLER_NULLABLE user_data);
+
+//------------------------------------------------------------------------------
 // Version
 //------------------------------------------------------------------------------
 
@@ -867,6 +875,11 @@ IMPELLER_EXPORT IMPELLER_NODISCARD ImpellerSurface IMPELLER_NULLABLE
 ImpellerSurfaceCreateWrappedMetalDrawableNew(
     ImpellerContext IMPELLER_NONNULL context,
     void* IMPELLER_NONNULL metal_drawable);
+
+IMPELLER_EXPORT IMPELLER_NODISCARD ImpellerSurface IMPELLER_NULLABLE
+ImpellerSurfaceCreateWithTextureRenderTargetNew(
+    ImpellerContext IMPELLER_NONNULL context,
+    ImpellerTexture IMPELLER_NONNULL texture);
 
 //------------------------------------------------------------------------------
 /// @brief      Retain a strong reference to the object. The object can be NULL
@@ -1325,6 +1338,17 @@ ImpellerTextureCreateWithContentsNew(
     const ImpellerTextureDescriptor* IMPELLER_NONNULL descriptor,
     const ImpellerMapping* IMPELLER_NONNULL contents,
     void* IMPELLER_NULLABLE contents_on_release_user_data);
+
+IMPELLER_EXPORT IMPELLER_NODISCARD ImpellerTexture IMPELLER_NULLABLE
+ImpellerTextureCreateForSurfaceNew(
+    ImpellerContext IMPELLER_NONNULL context,
+    const ImpellerTextureDescriptor* IMPELLER_NONNULL descriptor);
+
+IMPELLER_EXPORT IMPELLER_NODISCARD void ImpellerTextureReadPixels(
+    ImpellerContext IMPELLER_NONNULL context,
+    ImpellerTexture IMPELLER_NONNULL texture,
+    ImpellerMappingCallback IMPELLER_NONNULL callback,
+    void* IMPELLER_NULLABLE user_data);
 
 //------------------------------------------------------------------------------
 /// @brief      Create a texture with an externally created OpenGL texture

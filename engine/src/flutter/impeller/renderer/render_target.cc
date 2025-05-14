@@ -327,19 +327,20 @@ RenderTarget RenderTargetAllocator::CreateOffscreen(
     RenderTarget::AttachmentConfig color_attachment_config,
     std::optional<RenderTarget::AttachmentConfig> stencil_attachment_config,
     const std::shared_ptr<Texture>& existing_color_texture,
-    const std::shared_ptr<Texture>& existing_depth_stencil_texture) {
+    const std::shared_ptr<Texture>& existing_depth_stencil_texture,
+    std::optional<PixelFormat> explicit_pixel_format) {
   if (size.IsEmpty()) {
     return {};
   }
 
   RenderTarget target;
+  PixelFormat pixel_format = explicit_pixel_format.value_or(
+      context.GetCapabilities()->GetDefaultColorFormat());
 
   std::shared_ptr<Texture> color0_tex;
   if (existing_color_texture) {
     color0_tex = existing_color_texture;
   } else {
-    PixelFormat pixel_format =
-        context.GetCapabilities()->GetDefaultColorFormat();
     TextureDescriptor color0_tex_desc;
     color0_tex_desc.storage_mode = color_attachment_config.storage_mode;
     color0_tex_desc.format = pixel_format;
@@ -382,13 +383,15 @@ RenderTarget RenderTargetAllocator::CreateOffscreenMSAA(
     std::optional<RenderTarget::AttachmentConfig> stencil_attachment_config,
     const std::shared_ptr<Texture>& existing_color_msaa_texture,
     const std::shared_ptr<Texture>& existing_color_resolve_texture,
-    const std::shared_ptr<Texture>& existing_depth_stencil_texture) {
+    const std::shared_ptr<Texture>& existing_depth_stencil_texture,
+    std::optional<PixelFormat> explicit_pixel_format) {
   if (size.IsEmpty()) {
     return {};
   }
 
   RenderTarget target;
-  PixelFormat pixel_format = context.GetCapabilities()->GetDefaultColorFormat();
+  PixelFormat pixel_format = explicit_pixel_format.value_or(
+      context.GetCapabilities()->GetDefaultColorFormat());
 
   // Create MSAA color texture.
   std::shared_ptr<Texture> color0_msaa_tex;

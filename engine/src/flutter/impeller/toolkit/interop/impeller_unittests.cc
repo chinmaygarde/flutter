@@ -4,6 +4,7 @@
 
 #include "flutter/fml/native_library.h"
 #include "flutter/fml/string_conversion.h"
+#include "flutter/fml/synchronization/count_down_latch.h"
 #include "flutter/testing/testing.h"
 #include "impeller/base/allocation.h"
 #include "impeller/renderer/backend/gles/context_gles.h"
@@ -629,6 +630,68 @@ TEST_P(InteropPlaygroundTest, CanGetPathBounds) {
   ASSERT_EQ(bounds.y, 100);
   ASSERT_EQ(bounds.width, 100);
   ASSERT_EQ(bounds.height, 100);
+}
+
+TEST_P(InteropPlaygroundTest, CanRenderToTextureWithReadback) {
+  auto context = hpp::Context{GetInteropContext().GetC()};
+  const auto texture_size = ImpellerISize{100, 100};
+  const auto texture_desc = ImpellerTextureDescriptor{
+      .pixel_format = kImpellerPixelFormatRGBA8888,
+      .size = texture_size,
+      .mip_count = 1u,
+  };
+
+  // Render to a texture and perform a readback.
+  std::shared_ptr<fml::Mapping> mapping;
+  {
+    ASSERT_TRUE(!!context.Get());
+    auto texture = hpp::Texture::ForSurface(context, texture_desc);
+    ASSERT_TRUE(!!texture.Get());
+    auto surface = hpp::Surface::WithTextureRenderTarget(context, texture);
+    ASSERT_TRUE(!!surface.Get());
+    auto dl = hpp::DisplayListBuilder{}
+                  .DrawOval({0, 0, static_cast<float>(texture_size.width),
+                             static_cast<float>(texture_size.height)},
+                            hpp::Paint{}.SetColor({1.0, 0.0, 0.0, 1.0}))
+                  .Build();
+    surface.Draw(dl);
+    ASSERT_TRUE(surface.Present());
+    fml::CountDownLatch latch(1u);
+    bool read = false;
+    texture.ReadPixels(context, [&](const auto* data) {
+      read = true;
+      if (!!data) {
+        mapping = std::make_shared<fml::MallocMapping>(
+            fml::MallocMapping::Copy(data->data, data->length));
+      }
+      latch.CountDown();
+    });
+    latch.Wait();
+    ASSERT_TRUE(read);
+    ASSERT_NE(mapping, nullptr);
+    ASSERT_EQ(mapping->GetSize(),
+              texture_size.width * texture_size.height * 4ul);
+  }
+
+  // Upload the texture as an image and render it.
+  {
+    auto texture = hpp::Texture::WithContents(
+        context, texture_desc,
+        std::make_unique<hpp::Mapping>(mapping->GetMapping(),
+                                       mapping->GetSize(), nullptr));
+    ASSERT_TRUE(!!texture.Get());
+    auto dl =
+        hpp::DisplayListBuilder{}
+            .DrawTexture(texture, {100, 100},
+                         kImpellerTextureSamplingNearestNeighbor, hpp::Paint{})
+            .Build();
+    ASSERT_TRUE(OpenPlaygroundHere(
+        [&](const auto& context, const auto& surface) -> bool {
+          hpp::Surface window(surface.GetC());
+          window.Draw(dl);
+          return true;
+        }));
+  }
 }
 
 }  // namespace impeller::interop::testing

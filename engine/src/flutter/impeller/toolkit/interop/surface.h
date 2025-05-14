@@ -18,6 +18,9 @@ namespace impeller::interop {
 class Surface
     : public Object<Surface, IMPELLER_INTERNAL_HANDLE_NAME(ImpellerSurface)> {
  public:
+  explicit Surface(Context& context,
+                   std::shared_ptr<impeller::Surface> surface);
+
   ~Surface() override;
 
   Surface(const Surface&) = delete;
@@ -31,8 +34,6 @@ class Surface
   bool Present() const;
 
  protected:
-  explicit Surface(Context& context,
-                   std::shared_ptr<impeller::Surface> surface);
 
  private:
   ScopedObject<Context> context_;

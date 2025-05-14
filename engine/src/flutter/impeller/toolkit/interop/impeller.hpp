@@ -25,7 +25,7 @@
 
 // Tripping this assertion means that the C++ wrapper needs to be updated to
 // account for impeller.h changes as necessary.
-static_assert(IMPELLER_VERSION == IMPELLER_MAKE_VERSION(1, 1, 4, 0),
+static_assert(IMPELLER_VERSION == IMPELLER_MAKE_VERSION(1, 1, 5, 0),
               "C++ bindings must be for the same version as the C API.");
 
 namespace IMPELLER_HPP_NAMESPACE {
@@ -177,8 +177,8 @@ struct Proc {
   PROC(ImpellerParagraphStyleSetLocale)                           \
   PROC(ImpellerParagraphStyleSetMaxLines)                         \
   PROC(ImpellerParagraphStyleSetTextAlignment)                    \
-  PROC(ImpellerParagraphStyleSetTextDirection)                    \
   PROC(ImpellerParagraphStyleSetTextDecoration)                   \
+  PROC(ImpellerParagraphStyleSetTextDirection)                    \
   PROC(ImpellerPathBuilderAddArc)                                 \
   PROC(ImpellerPathBuilderAddOval)                                \
   PROC(ImpellerPathBuilderAddRect)                                \
@@ -196,15 +196,18 @@ struct Proc {
   PROC(ImpellerPathGetBounds)                                     \
   PROC(ImpellerPathRelease)                                       \
   PROC(ImpellerPathRetain)                                        \
+  PROC(ImpellerSurfaceCreateWithTextureRenderTargetNew)           \
   PROC(ImpellerSurfaceCreateWrappedFBONew)                        \
   PROC(ImpellerSurfaceCreateWrappedMetalDrawableNew)              \
   PROC(ImpellerSurfaceDrawDisplayList)                            \
   PROC(ImpellerSurfacePresent)                                    \
   PROC(ImpellerSurfaceRelease)                                    \
   PROC(ImpellerSurfaceRetain)                                     \
+  PROC(ImpellerTextureCreateForSurfaceNew)                        \
   PROC(ImpellerTextureCreateWithContentsNew)                      \
   PROC(ImpellerTextureCreateWithOpenGLTextureHandleNew)           \
   PROC(ImpellerTextureGetOpenGLHandle)                            \
+  PROC(ImpellerTextureReadPixels)                                 \
   PROC(ImpellerTextureRelease)                                    \
   PROC(ImpellerTextureRetain)                                     \
   PROC(ImpellerTypographyContextNew)                              \
@@ -352,6 +355,10 @@ class Mapping {
 ///
 class Context : public Object<ImpellerContext, ImpellerContextTraits> {
  public:
+  Context(ImpellerContext context) : Object(context) {
+    gGlobalProcTable.ImpellerContextRetain(context);
+  }
+
   Context(ImpellerContext context, AdoptTag tag) : Object(context, tag) {}
 
   //----------------------------------------------------------------------------
@@ -390,6 +397,16 @@ class Context : public Object<ImpellerContext, ImpellerContextTraits> {
 class Texture : public Object<ImpellerTexture, ImpellerTextureTraits> {
  public:
   Texture(ImpellerTexture texture, AdoptTag adopt) : Object(texture, adopt) {}
+
+  //----------------------------------------------------------------------------
+  /// @see      ImpellerTextureCreateForSurfaceNew
+  ///
+  static Texture ForSurface(const Context& context,
+                            const ImpellerTextureDescriptor& descriptor) {
+    return Texture(gGlobalProcTable.ImpellerTextureCreateForSurfaceNew(
+                       context.Get(), &descriptor),
+                   AdoptTag::kAdopt);
+  }
 
   //----------------------------------------------------------------------------
   /// @see      ImpellerTextureCreateWithContentsNew
@@ -432,6 +449,30 @@ class Texture : public Object<ImpellerTexture, ImpellerTextureTraits> {
 
   uint64_t GetOpenGLHandle() const {
     return gGlobalProcTable.ImpellerTextureGetOpenGLHandle(Get());
+  }
+
+  //----------------------------------------------------------------------------
+  /// @brief      ImpellerTextureReadPixels
+  ///
+  void ReadPixels(
+      const Context& context,
+      std::function<void(const ImpellerMapping* mapping)> callback) const {
+    struct Capture {
+      std::function<void(const ImpellerMapping* mapping)> callback;
+    };
+    auto capture = new Capture();
+    capture->callback = std::move(callback);
+    gGlobalProcTable.ImpellerTextureReadPixels(
+        context.Get(),  //
+        Get(),          //
+        [](const ImpellerMapping* IMPELLER_NULLABLE mapping,
+           void* IMPELLER_NULLABLE user_data) -> void {
+          auto capture = reinterpret_cast<Capture*>(user_data);
+          capture->callback(mapping);
+          delete capture;
+        },       //
+        capture  //
+    );
   }
 };
 
@@ -1362,6 +1403,17 @@ class Surface : public Object<ImpellerSurface, ImpellerSurfaceTraits> {
   explicit Surface(ImpellerSurface surface) : Object(surface) {}
 
   Surface(ImpellerSurface surface, AdoptTag tag) : Object(surface, tag) {}
+
+  //----------------------------------------------------------------------------
+  /// @see      ImpellerSurfaceCreateWithTextureRenderTargetNew
+  ///
+  static Surface WithTextureRenderTarget(const Context& context,
+                                         const Texture& texture) {
+    return Surface(
+        gGlobalProcTable.ImpellerSurfaceCreateWithTextureRenderTargetNew(
+            context.Get(), texture.Get()),
+        AdoptTag::kAdopt);
+  }
 
   //----------------------------------------------------------------------------
   /// @see      ImpellerSurfaceCreateWrappedFBONew

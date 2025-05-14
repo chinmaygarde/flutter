@@ -589,6 +589,31 @@ void ImpellerDisplayListBuilderDrawPath(ImpellerDisplayListBuilder builder,
   GetPeer(builder)->DrawPath(*GetPeer(path), *GetPeer(paint));
 }
 
+IMPELLER_EXTERN_C ImpellerTexture ImpellerTextureCreateForSurfaceNew(
+    ImpellerContext context,
+    const ImpellerTextureDescriptor* descriptor) {
+  if (descriptor->mip_count != 1u) {
+    VALIDATION_LOG << "Textures for surfaces cannot have mip levels.";
+    return nullptr;
+  }
+  TextureDescriptor desc;
+  desc.storage_mode = StorageMode::kDevicePrivate;
+  desc.type = TextureType::kTexture2D;
+  desc.format = ToImpellerType(descriptor->pixel_format);
+  desc.size = ToImpellerType(descriptor->size);
+  desc.mip_count = 1u;
+  desc.usage = TextureUsage::kRenderTarget | TextureUsage::kShaderRead |
+               TextureUsage::kShaderWrite;
+  desc.sample_count = SampleCount::kCount1;
+  desc.compression_type = CompressionType::kLossless;
+  auto texture = Create<Texture>(*GetPeer(context), desc);
+  if (!texture->IsValid()) {
+    VALIDATION_LOG << "Could not create texture.";
+    return nullptr;
+  }
+  return texture.Leak();
+}
+
 IMPELLER_EXTERN_C
 ImpellerTexture ImpellerTextureCreateWithContentsNew(
     ImpellerContext context,
@@ -672,6 +697,66 @@ ImpellerTexture ImpellerTextureCreateWithOpenGLTextureHandleNew(
   return Create<Texture>(impeller::Context::BackendType::kOpenGLES,
                          std::move(texture))
       .Leak();
+}
+
+IMPELLER_EXTERN_C
+void ImpellerTextureReadPixels(ImpellerContext c_context,
+                               ImpellerTexture c_texture,
+                               ImpellerMappingCallback callback,
+                               void* user_data) {
+  // If this goes out of scope for any reason without being released, a failure
+  // condition is indicated to the caller.
+  auto on_failure = std::make_shared<fml::ScopedCleanupClosure>(
+      [callback, user_data]() { callback(nullptr, user_data); });
+
+  const auto& context = *GetPeer(c_context);
+  const auto& texture = *GetPeer(c_texture);
+
+  auto buffer = context.GetContext()->GetResourceAllocator()->CreateBuffer(
+      DeviceBufferDescriptor{
+          .storage_mode = StorageMode::kHostVisible,
+          .size = texture.GetTexture()
+                      ->GetTextureDescriptor()
+                      .GetByteSizeOfBaseMipLevel(),
+          .readback = true,
+      });
+
+  if (!buffer) {
+    VALIDATION_LOG << "Could not create device buffer for the copy target.";
+    return;
+  }
+
+  auto command_buffer = context.GetContext()->CreateCommandBuffer();
+  if (!command_buffer) {
+    VALIDATION_LOG << "Could not create command buffer.";
+    return;
+  }
+
+  command_buffer->SetLabel("BlitToBuffer Command Buffer");
+  auto pass = command_buffer->CreateBlitPass();
+  if (!pass) {
+    VALIDATION_LOG << "Could not create blit pass.";
+    return;
+  }
+  pass->SetLabel("BlitToBuffer Blit Pass");
+  pass->ConvertTextureToShaderRead(texture.GetTexture());
+  pass->AddCopy(texture.GetTexture(), buffer);
+  pass->EncodeCommands();
+  context.GetContext()->GetCommandQueue()->Submit(
+      {command_buffer},
+      [buffer, on_failure, callback, user_data](CommandBuffer::Status status) {
+        if (status != CommandBuffer::Status::kCompleted) {
+          VALIDATION_LOG << "Command buffer execution was not successful.";
+          return;
+        }
+        const auto mapping = ImpellerMapping{
+            .data = buffer->OnGetContents(),
+            .length = buffer->GetDeviceBufferDescriptor().size,
+            .on_release = nullptr,
+        };
+        callback(&mapping, user_data);
+        on_failure->Release();
+      });
 }
 
 IMPELLER_EXTERN_C
@@ -760,6 +845,72 @@ ImpellerSurface ImpellerSurfaceCreateWrappedMetalDrawableNew(
   VALIDATION_LOG << "Metal unavailable.";
   return nullptr;
 #endif  // IMPELLER_ENABLE_METAL
+}
+
+IMPELLER_EXTERN_C ImpellerSurface
+ImpellerSurfaceCreateWithTextureRenderTargetNew(ImpellerContext c_context,
+                                                ImpellerTexture texture) {
+  const auto* resolve_texture = GetPeer(texture);
+  const auto& desc = resolve_texture->GetTexture()->GetTextureDescriptor();
+  if (desc.mip_count != 1u || desc.sample_count != SampleCount::kCount1) {
+    VALIDATION_LOG << "Invalid target texture.";
+    return nullptr;
+  }
+
+  auto& context = *GetPeer(c_context);
+
+  const auto supports_offscreen_msaa =
+      context.GetContext()->GetCapabilities()->SupportsOffscreenMSAA();
+
+  // Don't allocate a render target from the render target cache since the
+  // lifecycle of this texture is not tied to a frame.
+  auto allocator =
+      RenderTargetAllocator{context.GetContext()->GetResourceAllocator()};
+
+  auto render_target =
+      supports_offscreen_msaa
+          ? allocator.CreateOffscreenMSAA(
+                *context.GetContext(), desc.size,
+                1u,                                               //
+                "OffscreenMSAA",                                  //
+                RenderTarget::kDefaultColorAttachmentConfigMSAA,  //
+                RenderTarget::kDefaultStencilAttachmentConfig,    //
+                nullptr,  // MSAA texture or null if newly allocated
+                resolve_texture->GetTexture(),  //
+                nullptr,     // depth-stencil texture or null if newly allocated
+                desc.format  //
+                )
+          : allocator.CreateOffscreen(
+                *context.GetContext(),                          //
+                desc.size,                                      //
+                1u,                                             //
+                "Offscreen",                                    //
+                RenderTarget::kDefaultColorAttachmentConfig,    //
+                RenderTarget::kDefaultStencilAttachmentConfig,  //
+                resolve_texture->GetTexture(),                  //
+                nullptr,                                        //
+                desc.format                                     //
+            );
+  if (!render_target.IsValid()) {
+    VALIDATION_LOG << "Could not create valid render target for offscreen MSAA "
+                      "with user provided resolve texture.";
+    return nullptr;
+  }
+
+  const auto interop_surface =
+      std::make_shared<impeller::Surface>(render_target);
+  if (!interop_surface || !interop_surface->IsValid()) {
+    VALIDATION_LOG << "Could not create valid surface.";
+    return nullptr;
+  }
+
+  auto surface = Create<Surface>(context, std::move(interop_surface));
+  if (!surface->IsValid()) {
+    VALIDATION_LOG << "Could not create valid interop surface.";
+    return nullptr;
+  }
+
+  return surface.Leak();
 }
 
 IMPELLER_EXTERN_C void ImpellerSurfaceRetain(ImpellerSurface surface) {
