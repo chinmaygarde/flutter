@@ -897,14 +897,14 @@ ImpellerSurfaceCreateWithTextureRenderTargetNew(ImpellerContext c_context,
     return nullptr;
   }
 
-  const auto interop_surface =
+  const auto impeller_surface =
       std::make_shared<impeller::Surface>(render_target);
-  if (!interop_surface || !interop_surface->IsValid()) {
+  if (!impeller_surface || !impeller_surface->IsValid()) {
     VALIDATION_LOG << "Could not create valid surface.";
     return nullptr;
   }
 
-  auto surface = Create<Surface>(context, std::move(interop_surface));
+  auto surface = Create<Surface>(context, std::move(impeller_surface));
   if (!surface->IsValid()) {
     VALIDATION_LOG << "Could not create valid interop surface.";
     return nullptr;
