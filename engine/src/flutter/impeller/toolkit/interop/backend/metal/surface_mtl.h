@@ -20,6 +20,9 @@ class SurfaceMTL final : public Surface {
   SurfaceMTL(const SurfaceMTL&) = delete;
 
   SurfaceMTL& operator=(const SurfaceMTL&) = delete;
+
+  // |Surface|
+  bool Present() const override;
 };
 
 }  // namespace impeller::interop

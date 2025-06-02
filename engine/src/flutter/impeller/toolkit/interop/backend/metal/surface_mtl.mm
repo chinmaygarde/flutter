@@ -23,4 +23,9 @@ SurfaceMTL::SurfaceMTL(Context& context,
 
 SurfaceMTL::~SurfaceMTL() = default;
 
+bool SurfaceMTL::Present() const {
+  Surface::Present();
+  return true;
+}
+
 }  // namespace impeller::interop

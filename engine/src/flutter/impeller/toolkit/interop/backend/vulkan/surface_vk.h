@@ -18,6 +18,9 @@ class SurfaceVK final : public Surface {
   SurfaceVK(const SurfaceVK&) = delete;
 
   SurfaceVK& operator=(const SurfaceVK&) = delete;
+
+  // |Surface|
+  bool Present() const override;
 };
 
 }  // namespace impeller::interop

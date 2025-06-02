@@ -26,4 +26,9 @@ SurfaceGLES::SurfaceGLES(Context& context,
 
 SurfaceGLES::~SurfaceGLES() = default;
 
+bool SurfaceGLES::Present() const {
+  Surface::Present();
+  return true;
+}
+
 }  // namespace impeller::interop

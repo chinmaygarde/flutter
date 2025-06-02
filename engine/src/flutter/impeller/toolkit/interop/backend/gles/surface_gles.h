@@ -24,6 +24,9 @@ class SurfaceGLES final : public Surface {
   SurfaceGLES(const SurfaceGLES&) = delete;
 
   SurfaceGLES& operator=(const SurfaceGLES&) = delete;
+
+  // |Surface|
+  bool Present() const override;
 };
 
 }  // namespace impeller::interop

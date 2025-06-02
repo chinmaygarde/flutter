@@ -847,6 +847,30 @@ ImpellerSurface ImpellerSurfaceCreateWrappedMetalDrawableNew(
 #endif  // IMPELLER_ENABLE_METAL
 }
 
+static ImpellerSurface CreateSurfaceNew(
+    Context& context,
+    std::shared_ptr<impeller::Surface> impeller_surface) {
+#if IMPELLER_ENABLE_OPENGLES
+  if (context.IsGL()) {
+    return Create<SurfaceGLES>(context, std::move(impeller_surface)).Leak();
+  }
+#endif
+
+#if IMPELLER_ENABLE_METAL
+  if (context.IsMetal()) {
+    return Create<SurfaceMTL>(context, std::move(impeller_surface)).Leak();
+  }
+#endif
+
+#if IMPELLER_ENABLE_VULKAN
+  if (context.IsVulkan()) {
+    return Create<SurfaceVK>(context, std::move(impeller_surface)).Leak();
+  }
+#endif
+
+  return nullptr;
+}
+
 IMPELLER_EXTERN_C ImpellerSurface
 ImpellerSurfaceCreateWithTextureRenderTargetNew(ImpellerContext c_context,
                                                 ImpellerTexture texture) {
@@ -904,13 +928,7 @@ ImpellerSurfaceCreateWithTextureRenderTargetNew(ImpellerContext c_context,
     return nullptr;
   }
 
-  auto surface = Create<Surface>(context, std::move(impeller_surface));
-  if (!surface->IsValid()) {
-    VALIDATION_LOG << "Could not create valid interop surface.";
-    return nullptr;
-  }
-
-  return surface.Leak();
+  return CreateSurfaceNew(context, std::move(impeller_surface));
 }
 
 IMPELLER_EXTERN_C void ImpellerSurfaceRetain(ImpellerSurface surface) {
