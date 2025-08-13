@@ -797,10 +797,6 @@ class Shell final : public PlatformView::Delegate,
   // |ResourceCacheLimitItem|
   size_t GetResourceCacheLimit() override { return resource_cache_limit_; };
 
-  // Creates an asset bundle from the original settings asset path or
-  // directory.
-  std::unique_ptr<DirectoryAssetBundle> RestoreOriginalAssetResolver();
-
   DlISize ExpectedFrameSize(int64_t view_id);
 
   // For accessing the Shell via the raster thread, necessary for various

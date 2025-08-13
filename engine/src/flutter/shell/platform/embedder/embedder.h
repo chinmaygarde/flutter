@@ -2435,6 +2435,22 @@ typedef void (*FlutterLogMessageCallback)(const char* /* tag */,
 typedef struct _FlutterEngineAOTData* FlutterEngineAOTData;
 
 typedef struct {
+  /// The size of this struct. Must be sizeof(FlutterAssetMapping).
+  size_t struct_size;
+  // A pointer to the data for the asset.
+  void* data;
+  // The size (in bytes) of the asset.
+  uint64_t size;
+  // The callback that the engine may invoke on any thread when it is done using
+  // the mapping.
+  VoidCallback on_release;
+} FlutterAssetMapping;
+
+typedef bool (*FlutterAssetCallback)(const char* /* asset name */,
+                                     FlutterAssetMapping* /* mapping */,
+                                     void* /* user_data */);
+
+typedef struct {
   /// The size of this struct. Must be sizeof(FlutterProjectArgs).
   size_t struct_size;
   /// The path to the Flutter assets directory containing project assets. The
@@ -2744,6 +2760,8 @@ typedef struct {
   /// `PlatformDispatcher.instance.engineId`. Can be used in native code to
   /// retrieve the engine instance that is running the Dart code.
   int64_t engine_id;
+
+  FlutterAssetCallback assets_callback;
 } FlutterProjectArgs;
 
 typedef struct {

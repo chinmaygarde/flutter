@@ -55,6 +55,7 @@ extern const intptr_t kPlatformStrongDillSize;
 #include "flutter/shell/platform/embedder/embedder.h"
 #include "flutter/shell/platform/embedder/embedder_engine.h"
 #include "flutter/shell/platform/embedder/embedder_external_texture_resolver.h"
+#include "flutter/shell/platform/embedder/embedder_logging.h"
 #include "flutter/shell/platform/embedder/embedder_platform_message_response.h"
 #include "flutter/shell/platform/embedder/embedder_render_target.h"
 #include "flutter/shell/platform/embedder/embedder_render_target_skia.h"
@@ -131,29 +132,9 @@ static constexpr FlutterViewId kFlutterImplicitViewId = 0;
 // 1 for handled, and 0 for not. Malformed value is considered false.
 const char* kFlutterKeyDataChannel = "flutter/keydata";
 
-static FlutterEngineResult LogEmbedderError(FlutterEngineResult code,
-                                            const char* reason,
-                                            const char* code_name,
-                                            const char* function,
-                                            const char* file,
-                                            int line) {
-#if FML_OS_WIN
-  constexpr char kSeparator = '\\';
-#else
-  constexpr char kSeparator = '/';
-#endif
-  const auto file_base =
-      (::strrchr(file, kSeparator) ? strrchr(file, kSeparator) + 1 : file);
-  char error[256] = {};
-  snprintf(error, (sizeof(error) / sizeof(char)),
-           "%s (%d): '%s' returned '%s'. %s", file_base, line, function,
-           code_name, reason);
-  std::cerr << error << std::endl;
-  return code;
-}
-
-#define LOG_EMBEDDER_ERROR(code, reason) \
-  LogEmbedderError(code, reason, #code, __FUNCTION__, __FILE__, __LINE__)
+#define LOG_EMBEDDER_ERROR(code, reason)                                 \
+  flutter::LogEmbedderError(code, reason, #code, __FUNCTION__, __FILE__, \
+                            __LINE__)
 
 static bool IsOpenGLRendererConfigValid(const FlutterRendererConfig* config) {
   if (config->type != kOpenGL) {
@@ -1979,6 +1960,40 @@ FlutterEngineResult FlutterEngineRun(size_t version,
   return FlutterEngineRunInitialized(*engine_out);
 }
 
+using AssetCallback = std::function<std::unique_ptr<fml::Mapping>(const char*)>;
+static AssetCallback WrapAssetCallback(FlutterAssetCallback callback,
+                                       void* user_data) {
+  if (!callback) {
+    return nullptr;
+  }
+  return [callback, user_data]() -> std::unique_ptr<fml::Mapping> {
+    return nullptr;
+  };
+}
+
+static std::unique_ptr<fml::Mapping> FindApplicationKernelMapping(
+    const std::string& assets_path,
+    AssetCallback asset_callback) {
+  // First, assume that the asset path is a regular file system.
+  const std::string kApplicationKernelSnapshotFileName = "kernel_blob.bin";
+  {
+    // Verify the assets path contains Dart 2 kernel assets.
+    std::string application_kernel_path = fml::paths::JoinPaths(
+        {assets_path, kApplicationKernelSnapshotFileName});
+
+    if (auto mapping =
+            fml::FileMapping::CreateReadOnly(application_kernel_path)) {
+      return mapping;
+    }
+  }
+
+  // Check for a custom asset resolver.
+  if (asset_callback) {
+    return asset_callback(kApplicationKernelSnapshotFileName.c_str());
+  }
+  return nullptr;
+}
+
 FlutterEngineResult FlutterEngineInitialize(size_t version,
                                             const FlutterRendererConfig* config,
                                             const FlutterProjectArgs* args,
@@ -2075,16 +2090,19 @@ FlutterEngineResult FlutterEngineInitialize(size_t version,
   settings.old_gen_heap_size = SAFE_ACCESS(args, dart_old_gen_heap_size, -1);
 
   if (!flutter::DartVM::IsRunningPrecompiledCode()) {
-    // Verify the assets path contains Dart 2 kernel assets.
-    const std::string kApplicationKernelSnapshotFileName = "kernel_blob.bin";
-    std::string application_kernel_path = fml::paths::JoinPaths(
-        {settings.assets_path, kApplicationKernelSnapshotFileName});
-    if (!fml::IsFile(application_kernel_path)) {
+    auto kernel_mapping = FindApplicationKernelMapping(settings.assets_path);
+    if (!kernel_mapping) {
       return LOG_EMBEDDER_ERROR(
           kInvalidArguments,
           "Not running in AOT mode but could not resolve the kernel binary.");
     }
-    settings.application_kernel_asset = kApplicationKernelSnapshotFileName;
+    settings.application_kernels =
+        fml::MakeCopyable([kernel_mapping = std::move(
+                               kernel_mapping)]() mutable -> flutter::Mappings {
+          flutter::Mappings mappings;
+          mappings.emplace_back(std::move(kernel_mapping));
+          return mappings;
+        });
   }
 
   if (SAFE_ACCESS(args, root_isolate_create_callback, nullptr) != nullptr) {
