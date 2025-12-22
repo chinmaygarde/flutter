@@ -167,11 +167,11 @@ class APNGImageGenerator : public ImageGenerator {
                                       sizeof(ChunkHeader));
   }
 
-  static constexpr size_t GetChunkSize(const ChunkHeader* chunk) {
+  static inline size_t GetChunkSize(const ChunkHeader* chunk) {
     return sizeof(ChunkHeader) + chunk->get_data_length() + kChunkCrcSize;
   }
 
-  static constexpr bool IsChunkCopySafe(const ChunkHeader* chunk) {
+  static inline bool IsChunkCopySafe(const ChunkHeader* chunk) {
     // The safe-to-copy bit is the 5th bit of the chunk name's 4th byte. This is
     // the same as checking that the 4th byte is lowercase.
     return (chunk->get_type() & 0x20) != 0;

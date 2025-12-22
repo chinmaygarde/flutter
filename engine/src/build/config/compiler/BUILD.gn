@@ -81,6 +81,8 @@ config("compiler") {
     defines += [
       "_XOPEN_SOURCE=700",
       "_QNX_SOURCE",
+      "__EXT_QNX",
+      "__BSD_VISIBLE",
       "SKNX_NO_SIMD",
     ]
   }

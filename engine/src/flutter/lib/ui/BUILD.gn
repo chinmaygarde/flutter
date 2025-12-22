@@ -12,15 +12,18 @@ if (is_fuchsia) {
 }
 
 source_set("ui") {
-  cflags = [
-    # Dart gives us doubles. Skia and Impeller work in floats.
-    # If Dart gives us a double > FLT_MAX or < -FLT_MAX, implicit conversion
-    # will convert it to either inf/-inf or FLT_MAX/-FLT_MAX (undefined
-    # behavior). This can result in surprising and difficult to debug behavior
-    # for Flutter application developers, so it should be explicitly handled
-    # via SafeNarrow.
-    "-Wimplicit-float-conversion",
-  ]
+  cflags = []
+  if (is_clang) {
+    cflags += [
+      # Dart gives us doubles. Skia and Impeller work in floats.
+      # If Dart gives us a double > FLT_MAX or < -FLT_MAX, implicit conversion
+      # will convert it to either inf/-inf or FLT_MAX/-FLT_MAX (undefined
+      # behavior). This can result in surprising and difficult to debug behavior
+      # for Flutter application developers, so it should be explicitly handled
+      # via SafeNarrow.
+      "-Wimplicit-float-conversion",
+    ]
+  }
 
   if (is_win) {
     # This causes build failures in third_party dependencies on Windows.

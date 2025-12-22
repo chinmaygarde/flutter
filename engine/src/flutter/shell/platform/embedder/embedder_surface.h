@@ -9,6 +9,7 @@
 #include "flutter/flow/embedded_views.h"
 #include "flutter/flow/surface.h"
 #include "flutter/fml/macros.h"
+#include "flutter/third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace flutter {
 

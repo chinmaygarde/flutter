@@ -74,13 +74,10 @@ group("flutter") {
   testonly = true
 
   # Compile the engine.
-  public_deps = []
+  public_deps = [ "//flutter/shell/platform/embedder:flutter_engine" ]
 
   if (!is_qnx) {
-    public_deps = [
-      "//flutter/shell/platform/embedder:flutter_engine",
-      "//flutter/sky",
-    ]
+    public_deps += [ "//flutter/sky" ]
     if (enable_unittests) {
       public_deps += [ ":unittests" ]
     }

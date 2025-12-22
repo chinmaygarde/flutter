@@ -106,8 +106,8 @@ class RasterCacheKey {
   };
 
   struct Equal {
-    constexpr bool operator()(const RasterCacheKey& lhs,
-                              const RasterCacheKey& rhs) const {
+    bool operator()(const RasterCacheKey& lhs,
+                    const RasterCacheKey& rhs) const {
       return lhs.id_ == rhs.id_ && lhs.matrix_ == rhs.matrix_;
     }
   };
