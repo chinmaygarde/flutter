@@ -48,7 +48,7 @@ struct Radians {
 
   explicit constexpr Radians(Scalar p_radians) : radians(p_radians) {}
 
-  constexpr bool IsFinite() const { return std::isfinite(radians); }
+  inline bool IsFinite() const { return std::isfinite(radians); }
 
   constexpr Radians operator-() { return Radians{-radians}; }
 
@@ -60,7 +60,7 @@ struct Radians {
     return Radians{radians - r.radians};
   }
 
-  constexpr auto operator<=>(const Radians& r) const = default;
+  inline auto operator<=>(const Radians& r) const = default;
 };
 
 struct Degrees {
@@ -74,7 +74,7 @@ struct Degrees {
     return Radians{degrees * kPi / 180.0f};
   };
 
-  constexpr bool IsFinite() const { return std::isfinite(degrees); }
+  inline bool IsFinite() const { return std::isfinite(degrees); }
 
   constexpr Degrees operator-() const { return Degrees{-degrees}; }
 
@@ -86,9 +86,9 @@ struct Degrees {
     return Degrees{degrees - d.degrees};
   }
 
-  constexpr auto operator<=>(const Degrees& d) const = default;
+  inline auto operator<=>(const Degrees& d) const = default;
 
-  constexpr Degrees GetPositive() const {
+  inline Degrees GetPositive() const {
     Scalar deg = std::fmod(degrees, 360.0f);
     if (deg < 0.0f) {
       deg += 360.0f;

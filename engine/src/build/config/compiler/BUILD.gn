@@ -483,14 +483,15 @@ config("compiler") {
 # C++ modules (available and enabled by default in C++20 and above) are
 # prohibited by the style guide.
 config("cxx_disable_modules") {
-  disable_modules_flags = [
-    "-fno-modules",
-
-    # Some Clang versions do not disable ObjC modules (as tested by
-    # __has_feature(objc_modules)) when just -fno-modules is present.
-    "-Xclang",
-    "-fno-cxx-modules",
-  ]
+  disable_modules_flags = [ "-fno-modules" ]
+  if (is_clang) {
+    disable_modules_flags += [
+      # Some Clang versions do not disable ObjC modules (as tested by
+      # __has_feature(objc_modules)) when just -fno-modules is present.
+      "-Xclang",
+      "-fno-cxx-modules",
+    ]
+  }
   cflags_c = disable_modules_flags
   cflags_cc = disable_modules_flags
   cflags_objc = disable_modules_flags
@@ -1023,7 +1024,8 @@ config("optimize") {
   }
 
   lto_flags = []
-  if (enable_lto && (is_linux || is_ios || is_mac || is_android || is_fuchsia || is_wasm)) {
+  if (enable_lto &&
+      (is_linux || is_ios || is_mac || is_android || is_fuchsia || is_wasm)) {
     lto_flags += [ "-flto" ]
   }
 

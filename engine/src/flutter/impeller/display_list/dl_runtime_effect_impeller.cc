@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "flutter/impeller/display_list/dl_runtime_effect_impeller.h"
+
 #include "flutter/impeller/runtime_stage/runtime_stage.h"
+#include "flutter/third_party/skia/include/effects/SkRuntimeEffect.h"
 
 namespace flutter {
 
