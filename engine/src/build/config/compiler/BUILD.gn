@@ -691,7 +691,17 @@ config("runtime_library") {
 default_warning_flags = []
 default_warning_flags_cc = []
 if (is_qnx) {
-  default_warning_flags_cc += [ "-fpermissive" ]
+  default_warning_flags_cc += [
+    "-Wno-cpp",
+
+    # Some Skia code uses clang:: attributes with no guards.
+    "-Wno-attributes",
+
+    # Some Flutter code depends on exhaustive enum checks that don't return anything.
+    "-Wno-return-type",
+
+    "-fpermissive",
+  ]
 }
 
 if (is_win) {

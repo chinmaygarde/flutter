@@ -3,15 +3,15 @@
 # found in the LICENSE file.
 
 import("//build/toolchain/ccache.gni")
-import("//build/toolchain/gcc_toolchain.gni")
+import("//build/toolchain/qnx/qnx_toolchain.gni")
 
-if (use_ccache && false) {
+if (use_ccache) {
   compiler_prefix = "ccache "
 } else {
   compiler_prefix = ""
 }
 
-gcc_toolchain("qnx") {
+qnx_toolchain("qnx") {
   asm = "qcc"
   cc = "${compiler_prefix}qcc"
   cxx = "${compiler_prefix}q++"

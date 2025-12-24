@@ -457,6 +457,12 @@ shared_library("flutter_engine_library") {
     ldflags += [ "-Wl,--version-script=" + rebase_path("embedder_exports.lst") ]
   }
 
+  libs = []
+
+  if (is_qnx) {
+    libs += [ "socket" ]
+  }
+
   deps = [ ":embedder" ]
 
   public_configs = [ "//flutter:config" ]
