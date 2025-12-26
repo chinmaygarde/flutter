@@ -460,7 +460,11 @@ shared_library("flutter_engine_library") {
   libs = []
 
   if (is_qnx) {
-    libs += [ "socket" ]
+    libs += [
+      "socket",
+      "epoll",
+      "timerfd",
+    ]
   }
 
   deps = [ ":embedder" ]
