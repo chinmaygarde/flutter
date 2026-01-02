@@ -18,6 +18,8 @@
 #include <windows.h>
 #elif defined(OS_FUCHSIA)
 #include <lib/zx/thread.h>
+#elif defined(FML_OS_QNX)
+#include <sys/neutrino.h>
 #else
 #include <pthread.h>
 #endif
@@ -126,6 +128,10 @@ void SetThreadName(const std::string& name) {
   }
 #elif defined(OS_FUCHSIA)
   zx::thread::self()->set_property(ZX_PROP_NAME, name.c_str(), name.size());
+#elif defined(FML_OS_QNX)
+  constexpr std::string::size_type kQNXMaxThreadNameLen = _NTO_THREAD_NAME_MAX;
+  pthread_setname_np(pthread_self(),
+                     name.substr(0, kQNXMaxThreadNameLen).c_str());
 #else
   FML_DLOG(INFO) << "Could not set the thread name to '" << name
                  << "' on this platform.";

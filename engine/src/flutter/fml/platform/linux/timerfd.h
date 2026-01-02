@@ -13,8 +13,10 @@
     // sys/timerfd.h is always present in Android NDK due to unified headers,
     // but timerfd functions are only available on API 19 or later.
 // clang-format on
+extern "C" {
 
 #include <sys/timerfd.h>
+}
 
 #define FML_TIMERFD_AVAILABLE 1
 

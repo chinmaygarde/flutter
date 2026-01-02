@@ -186,14 +186,17 @@ source_set("fml") {
     ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_qnx) {
     sources += [
       "platform/linux/message_loop_linux.cc",
       "platform/linux/message_loop_linux.h",
-      "platform/linux/paths_linux.cc",
       "platform/linux/timerfd.cc",
       "platform/linux/timerfd.h",
     ]
+  }
+
+  if (is_linux) {
+    sources += [ "platform/linux/paths_linux.cc" ]
   }
 
   if (is_qnx) {
@@ -250,6 +253,15 @@ source_set("fml") {
       "platform/posix/paths_posix.cc",
       "platform/posix/posix_wrappers_posix.cc",
       "platform/posix/process_posix.cc",
+    ]
+  }
+
+  libs = []
+
+  if (is_qnx) {
+    libs += [
+      "timerfd",
+      "epoll",
     ]
   }
 }

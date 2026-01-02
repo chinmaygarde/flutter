@@ -18,7 +18,7 @@
 #include "flutter/fml/platform/android/message_loop_android.h"
 #elif OS_FUCHSIA
 #include "flutter/fml/platform/fuchsia/message_loop_fuchsia.h"
-#elif FML_OS_LINUX
+#elif FML_OS_LINUX || FML_OS_QNX
 #include "flutter/fml/platform/linux/message_loop_linux.h"
 #elif FML_OS_WIN
 #include "flutter/fml/platform/win/message_loop_win.h"
@@ -33,7 +33,7 @@ fml::RefPtr<MessageLoopImpl> MessageLoopImpl::Create() {
   return fml::MakeRefCounted<MessageLoopAndroid>();
 #elif OS_FUCHSIA
   return fml::MakeRefCounted<MessageLoopFuchsia>();
-#elif FML_OS_LINUX
+#elif FML_OS_LINUX || FML_OS_QNX
   return fml::MakeRefCounted<MessageLoopLinux>();
 #elif FML_OS_WIN
   return fml::MakeRefCounted<MessageLoopWin>();
