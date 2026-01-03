@@ -110,6 +110,8 @@ source_set("txt") {
     deps += [ "${fuchsia_sdk}/fidl/fuchsia.fonts" ]
   } else if (is_win) {
     sources += [ "src/txt/platform_windows.cc" ]
+  } else if (is_qnx) {
+    sources += [ "src/txt/platform_qnx.cc" ]
   } else {
     sources += [ "src/txt/platform.cc" ]
   }
